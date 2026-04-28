@@ -1,0 +1,7 @@
+% Synthetic extracted PDF feature dump — feed with --from-text --type pdf
+<< /Type /Catalog /OpenAction 4 0 R /AcroForm << /Fields [] >> >>
+4 0 obj << /Type /Action /S /JavaScript /JS (app.alert("hi"); var u = "http://attacker.example/x"; ) >>
+5 0 obj << /Type /Action /S /Launch /F (calc.exe) >>
+6 0 obj << /URI (http://example-attacker.example/landing) >>
+7 0 obj << /Type /EmbeddedFile /Length 1024 >>
+endobj

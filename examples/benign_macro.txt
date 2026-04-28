@@ -1,0 +1,9 @@
+' Benign macro — formats a worksheet on demand. No auto-execute, no shell, no network.
+
+Sub FormatReport()
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("Report")
+    ws.Range("A1:F1").Font.Bold = True
+    ws.Range("A1:F1").Interior.Color = RGB(220, 230, 241)
+    ws.Columns("A:F").AutoFit
+End Sub

