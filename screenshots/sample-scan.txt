@@ -1,0 +1,62 @@
+==============================================================
+DEMO 1: Synthetic VBA macro downloader (Office document)
+Command: maldoc --file examples/sample_macro.txt --from-text --type office --no-color
+==============================================================
+
+MalDoc Scanner
+Source: examples/sample_macro.txt  |  Type: office  |  Score: 100/100  |  Severity: HIGH
+
+  note: input read as raw text — extraction step skipped
+
+────────────────────────────────────────────────────────────────────────
+[  HIGH] + 25  vba_autoopen
+        macro auto-runs on document open
+[  HIGH] + 25  vba_wscript_shell
+        WScript.Shell — runs commands
+[  HIGH] + 25  vba_powershell_shell
+        PowerShell invocation reference
+[  HIGH] + 25  vba_xmlhttp
+        XMLHTTP — used to download payloads
+[  HIGH] + 25  vba_schtasks
+        scheduled task creation — persistence
+[  HIGH] + 15  vba_chr_obfuscation
+        Chr()-based string concatenation — obfuscation
+[  HIGH] + 10  vba_createobject
+        CreateObject — late-bound COM, often used to dodge static analysis
+────────────────────────────────────────────────────────────────────────
+
+URLs (1):
+  http://attacker.example/payload.bin
+
+Exit code: 1 (HIGH severity)
+
+==============================================================
+DEMO 2: Synthetic PDF with embedded JS + Launch action
+Command: maldoc --file examples/sample_pdf_features.txt --from-text --type pdf --no-color
+==============================================================
+
+MalDoc Scanner
+Source: examples/sample_pdf_features.txt  |  Type: pdf  |  Score: 100/100  |  Severity: HIGH
+
+  note: input read as raw text — extraction step skipped
+
+────────────────────────────────────────────────────────────────────────
+[  HIGH] + 35  pdf_launch
+        /Launch action — runs an external program
+[  HIGH] + 30  pdf_javascript
+        embedded JavaScript
+[  HIGH] + 25  pdf_embeddedfile
+        /EmbeddedFile — binary attachment
+[  HIGH] + 20  pdf_openaction
+        /OpenAction — runs on document open
+[  HIGH] + 15  pdf_uri_http
+        /URI to non-HTTPS URL
+[  HIGH] +  5  pdf_acroform
+        AcroForm — common in benign docs but combined with JS is suspicious
+────────────────────────────────────────────────────────────────────────
+
+URLs (2):
+  http://attacker.example/x
+  http://example-attacker.example/landing
+
+Exit code: 1 (HIGH severity)
