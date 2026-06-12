@@ -13,7 +13,7 @@ Source: examples/sample_macro.txt  |  Type: office  |  Score: 100/100  |  Severi
         macro auto-runs on document open
 [  HIGH] + 25  vba_wscript_shell
         WScript.Shell — runs commands
-[  HIGH] + 25  vba_powershell_shell
+[  HIGH] + 25  vba_powershell_string
         PowerShell invocation reference
 [  HIGH] + 25  vba_xmlhttp
         XMLHTTP — used to download payloads
