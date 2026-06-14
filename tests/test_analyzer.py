@@ -62,3 +62,56 @@ def test_score_capped_at_100():
     )
     report = analyze_office(blob)
     assert report.score == 100
+
+
+def test_pdf_javascript_openaction_detected(tmp_path):
+    """A tiny PDF carrying /JavaScript + /OpenAction must be extracted and flagged."""
+    import pytest
+
+    pypdf = pytest.importorskip("pypdf")
+    from pypdf.generic import (
+        ArrayObject,
+        DictionaryObject,
+        NameObject,
+        TextStringObject,
+    )
+
+    from maldoc.pdf import extract_pdf_features
+
+    writer = pypdf.PdfWriter()
+    writer.add_blank_page(width=72, height=72)
+
+    # Build a JavaScript action and wire it up as the document OpenAction.
+    js_action = DictionaryObject(
+        {
+            NameObject("/S"): NameObject("/JavaScript"),
+            NameObject("/JS"): TextStringObject("app.alert('pwned');"),
+        }
+    )
+    js_ref = writer._add_object(js_action)
+    writer._root_object[NameObject("/OpenAction")] = js_ref
+    # Also register it under Names → JavaScript, the other common location.
+    writer._root_object[NameObject("/Names")] = DictionaryObject(
+        {
+            NameObject("/JavaScript"): DictionaryObject(
+                {NameObject("/Names"): ArrayObject([TextStringObject("evil"), js_ref])}
+            )
+        }
+    )
+
+    out = tmp_path / "evil.pdf"
+    with open(out, "wb") as fh:
+        writer.write(fh)
+
+    content, notes = extract_pdf_features(out)
+
+    # Extraction must actually produce object text (the old code returned nothing).
+    assert content, f"no content extracted; notes={notes}"
+    assert "/OpenAction" in content
+    assert "/JavaScript" in content
+
+    report = analyze_pdf(content, source=str(out))
+    hit_names = {h.name for h in report.hits}
+    assert "pdf_javascript" in hit_names
+    assert "pdf_openaction" in hit_names
+    assert report.severity in ("medium", "high")

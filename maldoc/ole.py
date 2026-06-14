@@ -38,5 +38,5 @@ def extract_vba(path: Path) -> tuple[str, list[str]]:
     finally:
         try:
             parser.close()
-        except Exception:
-            pass
+        except Exception as e:
+            notes.append(f"failed to close VBA parser: {e}")
